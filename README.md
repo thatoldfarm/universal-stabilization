@@ -4,7 +4,9 @@ A framework for Recursive Feedback Systems in Bidirectional Math to Achieve Univ
 Abstract: This paper formalizes the recursive feedback system as a universal equation for achieving stabilization and symmetry across diverse domains. The properties of boundedness, symmetry, and convergence are rigorously analyzed, demonstrating their applicability to fields such as physics, biology, artificial intelligence, economics, and computational systems. By generalizing the system’s dynamics, this work introduces a mathematical foundation for understanding equilibrium in complex systems, with wide-ranging practical applications. The original post about this system can be found on the Hive Blockchain [here.](https://peakd.com/stemsocial/@jacobpeacock/bidirectional-recursive-feedback-systems-a) 
 
 1. Introduction
+
 1.1 Motivation Stabilization and symmetry are universal features of natural and artificial systems, from physical laws to neural networks. This paper explores the recursive feedback system as a mathematical tool for modeling equilibrium, presenting it as a generalizable equation with universal applicability.
+
 1.2 Objectives
     • Define the recursive feedback system as a universal equation. 
     • Prove boundedness and convergence properties across multiple domains. 
@@ -27,7 +29,7 @@ wf,t+1=f({Rt(i)}),wb,t+1=g({Rt(i)})w_{f,t+1} = f(\{R_t(i)\}), \quad w_{b,t+1} = 
 Where ff and gg are domain-specific functions, such as mean or variance.
 ~~~
 
-4. Boundedness
+3. Boundedness
 
 ~~~
 3.1 Property Definition The recursive feedback system is bounded, meaning outputs remain within the range of inputs:
@@ -43,7 +45,7 @@ Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{
 Since weights wf,t,wb,t>0w_{f,t}, w_{b,t} > 0, and X(i),X′(i)X(i), X'(i) are bounded, the weighted average cannot exceed the range defined by min⁡(X(i),X′(i))\min(X(i), X'(i)) and max⁡(X(i),X′(i))\max(X(i), X'(i)).
 ~~~
 
-6. Convergence
+4. Convergence
 
 4.1 Property Definition Convergence ensures that the recursive system stabilizes over iterations:
 ~~~
@@ -67,7 +69,8 @@ As weights evolve recursively, the difference Δt(i)\Delta_t(i) decreases geomet
 Where Δw\Delta_w and Δx\Delta_x are bounded changes in weights and inputs, respectively. As t→∞t \to \infty, Δt(i)→0\Delta_t(i) \to 0, ensuring convergence.
 ~~~
 
-8. Applications Across Domains
+5. Applications Across Domains
+
 5.1 Physics (Time Symmetry)
     • Inputs: Time-evolving variables (e.g., position, momentum). 
     • Stabilization: Models equilibrium in time-reversible systems. 
