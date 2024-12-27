@@ -11,36 +11,63 @@ Abstract: This paper formalizes the recursive feedback system as a universal equ
     • Explore potential applications and implications for equilibrium modeling. 
 
 2. Universal Equation
+
+~~~
 2.1 General Formulation Let XX and X′X' represent forward and backward inputs, with dynamic weights wfw_f and wbw_b:
+
+~~~
 Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}} 
 This equation recursively stabilizes input values through bidirectional feedback.
+~~~
+
 2.2 Dynamic Weight Evolution Weights evolve based on recursive feedback:
+
+~~~
 wf,t+1=f({Rt(i)}),wb,t+1=g({Rt(i)})w_{f,t+1} = f(\{R_t(i)\}), \quad w_{b,t+1} = g(\{R_t(i)\}) 
 Where ff and gg are domain-specific functions, such as mean or variance.
+~~~
 
-3. Boundedness
+4. Boundedness
+
+~~~
 3.1 Property Definition The recursive feedback system is bounded, meaning outputs remain within the range of inputs:
+
+~~~
 Rt(i)∈[min⁡(X(i),X′(i)),max⁡(X(i),X′(i))]R_t(i) \in \left[\min(X(i), X'(i)), \max(X(i), X'(i))\right] 
+~~~
+
 3.2 Proof of Boundedness From the recursive transformation:
+
+~~~
 Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}} 
 Since weights wf,t,wb,t>0w_{f,t}, w_{b,t} > 0, and X(i),X′(i)X(i), X'(i) are bounded, the weighted average cannot exceed the range defined by min⁡(X(i),X′(i))\min(X(i), X'(i)) and max⁡(X(i),X′(i))\max(X(i), X'(i)).
+~~~
 
-4. Convergence
+6. Convergence
+
 4.1 Property Definition Convergence ensures that the recursive system stabilizes over iterations:
+~~~
 lim⁡t→∞Rt(i)=R∗(i)\lim_{t \to \infty} R_t(i) = R^*(i) 
 Where R∗(i)R^*(i) represents the stabilized output.
+~~~
+
 4.2 Geometric Decay Define Δt(i)\Delta_t(i) as the difference between consecutive steps:
+~~~
 Δt(i)=∣Rt+1(i)−Rt(i)∣\Delta_t(i) = |R_{t+1}(i) - R_t(i)| 
 The system exhibits geometric decay:
 Δt(i)≤k⋅Δt−1(i),0<k<1\Delta_t(i) \leq k \cdot \Delta_{t-1}(i), \quad 0 < k < 1 
 Where kk depends on the dynamic weights and input properties.
+~~~
+
 4.3 Proof of Convergence From the recursive transformation:
+~~~
 Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}} 
 As weights evolve recursively, the difference Δt(i)\Delta_t(i) decreases geometrically:
 Δt(i)=∣At+1Bt+1−AtBt∣≤Δw⋅Δx(wf,t+wb,t)2\Delta_t(i) = \left| \frac{A_{t+1}}{B_{t+1}} - \frac{A_t}{B_t} \right| \leq \frac{\Delta_w \cdot \Delta_x}{(w_{f,t} + w_{b,t})^2} 
 Where Δw\Delta_w and Δx\Delta_x are bounded changes in weights and inputs, respectively. As t→∞t \to \infty, Δt(i)→0\Delta_t(i) \to 0, ensuring convergence.
+~~~
 
-5. Applications Across Domains
+8. Applications Across Domains
 5.1 Physics (Time Symmetry)
     • Inputs: Time-evolving variables (e.g., position, momentum). 
     • Stabilization: Models equilibrium in time-reversible systems. 
@@ -72,7 +99,7 @@ Where Δw\Delta_w and Δx\Delta_x are bounded changes in weights and inputs, res
     • Inputs: Agent interactions and decisions. 
     • Stabilization: Harmonizes competing objectives to achieve collective equilibrium. 
 
-6. Conclusion The recursive feedback system represents a universal equation for achieving stabilization across domains. Its properties of boundedness and convergence provide a mathematical foundation for modeling equilibrium in complex systems. By demonstrating its utility across fields such as physics, biology, AI, and computational resource management, this system opens pathways to innovative solutions in both theory and application. Future work will explore its integration into real-world systems, multi-dimensional data, and ethical frameworks for responsible use.
+9. Conclusion The recursive feedback system represents a universal equation for achieving stabilization across domains. Its properties of boundedness and convergence provide a mathematical foundation for modeling equilibrium in complex systems. By demonstrating its utility across fields such as physics, biology, AI, and computational resource management, this system opens pathways to innovative solutions in both theory and application. Future work will explore its integration into real-world systems, multi-dimensional data, and ethical frameworks for responsible use.
 
 ### Recursive Feedback System Scripts:
 
