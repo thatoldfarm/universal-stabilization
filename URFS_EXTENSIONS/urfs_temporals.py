@@ -13,13 +13,14 @@ def kalman_filter_contributions(x, A=1.0, B=0.5, K=0.3, Z=0.1):
     B = K * (Z - A * x)
     return F, B
 
-def wave_equation_contributions(U, c=1.0, omega=0.05):
+def wave_equation_contributions(U, c=1.0, omega=0.05, max_derivative=10, damping=0.0001):
     if isinstance(U, (float, int)):
-        F = c**2 * U + omega * np.sin(U)
+        F = c**2 * U + omega * np.sin(U) - damping*U
         B = -U
     elif isinstance(U, np.ndarray):
-        F = c**2 * np.gradient(U, edge_order=2) + omega * np.sin(U)
-        B = -np.gradient(U, edge_order=2)
+        derivative = np.clip(np.gradient(U, edge_order=2), -max_derivative, max_derivative)
+        F = c**2 * derivative + omega * np.sin(U) - damping*U
+        B = -derivative
     else:
         raise ValueError("Unsupported input type for wave equation contributions.")
     return F, B
@@ -53,38 +54,77 @@ def weight_evolution_wave(X, R_t, U_prev, W_f, W_b, eta_f=0.001, eta_b=0.001, mi
     return np.array([np.clip(W_f - dW_f, -max_val, max_val), np.clip(W_b + dW_b, -max_val, max_val)])
 
 # --- Core Recursive Feedback and Weight Update ---
-def subsystem_dynamics(X, W_f, W_b, F, B, interaction_effects, scale_factor=1.0, max_val=1e10):
+def subsystem_dynamics(X, W_f, W_b, F, B, interaction_effects, scale_factor=1.0, max_val=1e10, damping=0.0001, X_prev=None, interaction_damping=0.0001):
      W_f = np.clip(W_f, 1e-8, max_val)
      W_b = np.clip(W_b, 1e-8, max_val)
      F = np.clip(F, -max_val, max_val) # Clip F
      B = np.clip(B, -max_val, max_val) # Clip B
      interaction_effects = np.clip(interaction_effects, -max_val, max_val)
-     value = scale_factor * (W_f * F + W_b * B + interaction_effects) / (W_f + W_b + 1e-8)
+     if X_prev is not None:
+        if isinstance(X, np.ndarray) and isinstance(X_prev, np.ndarray):
+            diff = X - X_prev
+            return np.clip( scale_factor * (W_f * F + W_b * B + interaction_effects - damping*diff - interaction_damping * interaction_effects ) / (W_f + W_b + 1e-8) , -max_val, max_val)
+        elif isinstance(X, np.ndarray):
+            if isinstance(X_prev, (int,float)):
+                diff = X - X_prev
+                return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping*diff - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8), -max_val, max_val)
+            else:
+                diff = X - np.array(X_prev, dtype=object)[2] if isinstance(X_prev, list) and len(X_prev) > 2 else X - np.array(X_prev)
+                return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping * diff - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8) , -max_val, max_val)
+        elif isinstance(X_prev, np.ndarray):
+            if isinstance(X,(int,float)):
+                diff =  np.array(X) - X_prev
+                return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping * diff - interaction_damping * interaction_effects ) / (W_f + W_b + 1e-8), -max_val, max_val)
+            else:
+                diff = np.array(X, dtype=object)[2]  if isinstance(X, list) and len(X) > 2 else np.array(X) - X_prev
+                return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping * diff - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8), -max_val, max_val)
+        else:
+          return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping*(float(X) - float(X_prev)) - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8), -max_val, max_val)
+     else:
+          value = scale_factor * (W_f * F + W_b * B + interaction_effects) / (W_f + W_b + 1e-8)
      return np.clip(value, -max_val, max_val)
 
-def reverse_subsystem_dynamics(R_t, X, W_f, W_b, scale_factor=1.0, epsilon=1e-8, max_val=1e10):
+def reverse_subsystem_dynamics(R_t, X, W_f, W_b, scale_factor=1.0, epsilon=1e-8, max_val=1e10, damping=0.0001):
     """Evolve the stabilized result R_t backward in time."""
     W_f = float(W_f)
     W_b = float(W_b)
+
     if isinstance(R_t, np.ndarray) and isinstance(X, np.ndarray):
-        return np.clip( (W_b * R_t - W_f * X) / (W_b + epsilon) , -max_val, max_val)
+        return np.clip( (W_b * R_t - W_f * X -damping*(R_t-X)) / (W_b + epsilon) , -max_val, max_val)
     elif isinstance(R_t, np.ndarray):
         if isinstance(X, (int, float)):
-            return  np.clip((W_b * R_t - W_f * np.array(X)) / (W_b + epsilon) , -max_val, max_val)
+            return  np.clip((W_b * R_t - W_f * np.array(X) - damping*(R_t - np.array(X))) / (W_b + epsilon) , -max_val, max_val)
         else: #  X is not an array but a list or something else
-            return  np.clip((W_b * R_t - W_f * np.array(X, dtype=object)[2] if isinstance(X, list) and len(X) > 2 else W_b * R_t - W_f * np.array(X) ) / (W_b + epsilon) , -max_val, max_val)
+            return  np.clip((W_b * R_t - W_f * np.array(X, dtype=object)[2] if isinstance(X, list) and len(X) > 2 else W_b * R_t - W_f * np.array(X) ) / (W_b + epsilon) -damping * (R_t - np.array(X, dtype=object)[2] if isinstance(X, list) and len(X) > 2 else R_t - np.array(X) ) , -max_val, max_val)
     elif isinstance(X, np.ndarray):
         if isinstance(R_t, (int, float)):
-             return np.clip((W_b * np.array(R_t) - W_f * X) / (W_b + epsilon), -max_val, max_val)
+            return np.clip((W_b * np.array(R_t) - W_f * X - damping*(np.array(R_t) - X) ) / (W_b + epsilon), -max_val, max_val)
         else:
-             return np.clip((W_b * np.array(R_t, dtype=object)[2]  if isinstance(R_t, list) and len(R_t)>2 else W_b * np.array(R_t) - W_f * X) / (W_b + epsilon), -max_val, max_val)
+             return np.clip((W_b * np.array(R_t, dtype=object)[2]  if isinstance(R_t, list) and len(R_t)>2 else W_b * np.array(R_t) - W_f * X - damping*(np.array(R_t, dtype=object)[2]  if isinstance(R_t, list) and len(R_t)>2 else np.array(R_t) - X) ) / (W_b + epsilon), -max_val, max_val)
     else:
       return np.clip((W_b * R_t - W_f * X) / (W_b + epsilon), -max_val, max_val)
+
+def compute_lyapunov_backward(X_t, X_t_prev, weights, max_val=1e10):
+    if X_t_prev is None:
+       return 0.0
+    return sum(weights[i][0] * np.clip(np.linalg.norm(X_t[i] - X_t_prev[i])**2, -max_val, max_val)  for i in range(n_subsystems))
+
+def wave_equation_contributions(U, c=1.0, omega=0.05, max_derivative=10, damping=0.0001):
+    if isinstance(U, (float, int)):
+        F = c**2 * U + omega * np.sin(U) - damping*U
+        B = -U
+    elif isinstance(U, np.ndarray):
+        derivative = np.clip(np.gradient(U, edge_order=2), -max_derivative, max_derivative)
+        F = c**2 * derivative + omega * np.sin(U) - damping*U
+        B = -derivative
+    else:
+        raise ValueError("Unsupported input type for wave equation contributions.")
+    return F, B
 # --- Parameters ---
 n_subsystems = 3
 n_iterations = 200
 history_length = 50
-causality_violation_strength = 0.5
+causality_violation_strength = 0.05
 
 # --- Initial Conditions ---
 wave_state_length = 10
@@ -117,7 +157,7 @@ def compute_lyapunov_forward(X_t, X_star, weights):
 def compute_lyapunov_backward(X_t, X_t_prev, weights, max_val=1e10):
     if X_t_prev is None:
        return 0.0
-    return sum(weights[i][0] * np.clip(np.linalg.norm(X_t[i] - X_t_prev[i])**2, -max_val, max_val)  for i in range(n_subsystems))
+    return sum(weights[i][0] * np.clip(np.linalg.norm(X_t[i] - X_t_prev[i])**2, -max_val, max_val) for i in range(n_subsystems))
 
 def compute_rho(weights):
   return  [w[1] / (w[0] + w[1] + 1e-8) for w in weights] # add small epsilon
@@ -159,13 +199,13 @@ for t in range(n_iterations):
     if isinstance(X_t_wave, np.ndarray):
         wave_F, wave_B = contributions[2]
         X_t_wave_next = subsystem_dynamics(
-            X_t, weights[2][0], weights[2][1], wave_F, wave_B, interaction_contributions[2], scale_factor=1.0
+            X_t, weights[2][0], weights[2][1], wave_F, wave_B, interaction_contributions[2], scale_factor=1.0, X_prev = X_t[2], interaction_damping=0.0001
         )
         X_t_wave = X_t_wave_next
 
     # Update all subsystems based on the recursive equation
     X_t_next = [
-         subsystem_dynamics(X_t[i], weights[i][0], weights[i][1], F_values[i], B_values_with_causality_violation[i], interaction_contributions[i], scale_factor=1.0)
+         subsystem_dynamics(X_t[i], weights[i][0], weights[i][1], F_values[i], B_values_with_causality_violation[i], interaction_contributions[i], scale_factor=1.0, X_prev= X_t_prev[i] if X_t_prev is not None else None, interaction_damping=0.0001)
         if i != 2 else X_t_wave
          for i in range(n_subsystems)
     ]
@@ -206,7 +246,9 @@ for t in range(n_iterations):
 # --- Main Loop (Backward Pass) ---
 X_t_reverse = R_history[-1] # start from the end
 lyapunov_reverse_values = []
+lyapunov_reverse_differences = []
 for t in range(n_iterations):
+  max_val = 1e10
   t_reverse = len(R_history) - 1 - t
   if t_reverse < 1:
     break  # Stop if we are at the start of the history
@@ -218,6 +260,8 @@ for t in range(n_iterations):
   ]
   V_t_reverse = compute_lyapunov_backward(X_t_reverse, X_t_prev_reverse, weights)
   lyapunov_reverse_values.append(V_t_reverse)
+  if t > 0:
+      lyapunov_reverse_differences.append(np.clip(abs(lyapunov_reverse_values[t]-lyapunov_reverse_values[t-1]), -max_val, max_val))
 
   results.append({
         "iteration": t,
@@ -227,7 +271,7 @@ for t in range(n_iterations):
     })
   X_t_reverse = X_t_reverse_next
   if t > 10:
-    if V_t_reverse > 0 and abs(np.clip(lyapunov_reverse_values[t]-lyapunov_reverse_values[t-1], -max_val, max_val) / V_t_reverse, -max_val, max_val)  < tolerance:
+      if V_t_reverse > 0 and  np.mean(lyapunov_reverse_differences[-10:]) / lyapunov_reverse_values[t-1] < tolerance:
           print(f"Converged at iteration: {t}")
           break
 
