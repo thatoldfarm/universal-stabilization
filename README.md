@@ -223,7 +223,8 @@ This suite of Python scripts demonstrates the implementation of Recursive Feedba
 
 **With curiosity and dedication, this suite brings the recursive feedback system to life across scalar, vector, and modular implementations. Happy exploring! 🚀**
 
-
+## License
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
 MIT License
 
