@@ -62,47 +62,52 @@ def subsystem_dynamics(X, W_f, W_b, F, B, interaction_effects, scale_factor=1.0,
      interaction_effects = np.clip(interaction_effects, -max_val, max_val)
      if X_prev is not None:
         if isinstance(X, np.ndarray) and isinstance(X_prev, np.ndarray):
-            return np.clip( scale_factor * (W_f * F + W_b * B + interaction_effects - damping*(X - X_prev) - interaction_damping * interaction_effects ) / (W_f + W_b + 1e-8) , -max_val, max_val)
+            diff = X - X_prev
+            value = scale_factor * (W_f * F + W_b * B + interaction_effects - damping*diff - interaction_damping * interaction_effects ) / (W_f + W_b + 1e-8)
         elif isinstance(X, np.ndarray):
             if isinstance(X_prev, (int,float)):
-                return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping*(X - X_prev) - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8), -max_val, max_val)
+                diff = X - X_prev
+                value = scale_factor * (W_f * F + W_b * B + interaction_effects - damping*diff - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8)
             else:
-                return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping*(X - np.array(X_prev, dtype=object)[2] if isinstance(X_prev, list) and len(X_prev) > 2 else X - np.array(X_prev))) / (W_f + W_b + 1e-8) - interaction_damping * interaction_effects, -max_val, max_val)
+                diff = X - np.array(X_prev, dtype=object)[2] if isinstance(X_prev, list) and len(X_prev) > 2 else X - np.array(X_prev)
+                value = scale_factor * (W_f * F + W_b * B + interaction_effects - damping * diff - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8)
         elif isinstance(X_prev, np.ndarray):
             if isinstance(X,(int,float)):
-                return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping * (np.array(X) - X_prev) - interaction_damping * interaction_effects ) / (W_f + W_b + 1e-8), -max_val, max_val)
+                diff =  np.array(X) - X_prev
+                value = scale_factor * (W_f * F + W_b * B + interaction_effects - damping * diff - interaction_damping * interaction_effects ) / (W_f + W_b + 1e-8)
             else:
-                return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping * (np.array(X,dtype=object)[2] if isinstance(X, list) and len(X) > 2 else np.array(X) - X_prev) ) / (W_f + W_b + 1e-8), -max_val, max_val)
+              diff = np.array(X, dtype=object)[2]  if isinstance(X, list) and len(X) > 2 else np.array(X) - X_prev
+              value = scale_factor * (W_f * F + W_b * B + interaction_effects - damping * diff - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8)
         else:
-          return np.clip(scale_factor * (W_f * F + W_b * B + interaction_effects - damping*(float(X) - float(X_prev)) - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8), -max_val, max_val)
+          value = scale_factor * (W_f * F + W_b * B + interaction_effects - damping*(float(X) - float(X_prev)) - interaction_damping * interaction_effects) / (W_f + W_b + 1e-8)
      else:
           value = scale_factor * (W_f * F + W_b * B + interaction_effects) / (W_f + W_b + 1e-8)
      return np.clip(value, -max_val, max_val)
 
-def reverse_subsystem_dynamics(R_t, X, W_f, W_b, scale_factor=1.0, epsilon=1e-8, max_val=1e10, damping=0.0001):
+def reverse_subsystem_dynamics(R_t, X, W_f, W_b, scale_factor=1.0, epsilon=1e-8):
     """Evolve the stabilized result R_t backward in time."""
     W_f = float(W_f)
     W_b = float(W_b)
 
     if isinstance(R_t, np.ndarray) and isinstance(X, np.ndarray):
-        return np.clip( (W_b * R_t - W_f * X -damping*(R_t-X)) / (W_b + epsilon) , -max_val, max_val)
+        return (W_b * R_t - W_f * X) / (W_b + epsilon)
     elif isinstance(R_t, np.ndarray):
         if isinstance(X, (int, float)):
-            return  np.clip((W_b * R_t - W_f * np.array(X) - damping*(R_t - np.array(X))) / (W_b + epsilon) , -max_val, max_val)
+            return (W_b * R_t - W_f * np.array(X)) / (W_b + epsilon)
         else: #  X is not an array but a list or something else
-            return  np.clip((W_b * R_t - W_f * np.array(X, dtype=object)[2] if isinstance(X, list) and len(X) > 2 else W_b * R_t - W_f * np.array(X) ) / (W_b + epsilon) -damping * (R_t - np.array(X, dtype=object)[2] if isinstance(X, list) and len(X) > 2 else R_t - np.array(X) ) , -max_val, max_val)
+            return (W_b * R_t - W_f * np.array(X, dtype=object)[2] if isinstance(X, list) and len(X) > 2 else W_b * R_t - W_f * np.array(X)) / (W_b + epsilon)
     elif isinstance(X, np.ndarray):
         if isinstance(R_t, (int, float)):
-            return np.clip((W_b * np.array(R_t) - W_f * X - damping*(np.array(R_t) - X) ) / (W_b + epsilon), -max_val, max_val)
+            return (W_b * np.array(R_t) - W_f * X) / (W_b + epsilon)
         else:
-             return np.clip((W_b * np.array(R_t, dtype=object)[2]  if isinstance(R_t, list) and len(R_t)>2 else W_b * np.array(R_t) - W_f * X - damping*(np.array(R_t, dtype=object)[2]  if isinstance(R_t, list) and len(R_t)>2 else np.array(R_t) - X) ) / (W_b + epsilon), -max_val, max_val)
+             return (W_b * np.array(R_t, dtype=object)[2]  if isinstance(R_t, list) and len(R_t)>2 else W_b * np.array(R_t) - W_f * X) / (W_b + epsilon)
     else:
-      return np.clip((W_b * R_t - W_f * X) / (W_b + epsilon), -max_val, max_val)
+      return (W_b * R_t - W_f * X) / (W_b + epsilon)
 
 def compute_lyapunov_backward(X_t, X_t_prev, weights, max_val=1e10):
     if X_t_prev is None:
        return 0.0
-    return sum( np.clip(np.linalg.norm(X_t[i] - X_t_prev[i])**2, 0, max_val)  for i in range(n_subsystems))
+    return sum(np.clip(np.linalg.norm(X_t[i] - X_t_prev[i])**2, 0, max_val)  for i in range(n_subsystems))
 
 def wave_equation_contributions(U, c=1.0, omega=0.05, max_derivative=10, damping=0.0001):
     if isinstance(U, (float, int)):
@@ -144,10 +149,9 @@ metrics = {
 lyapunov_values = []
 rho_values = []
 tolerance = 1e-2
-max_val = 1e10
 
-def compute_lyapunov_forward(X_t, X_star, weights):
-    return sum(np.linalg.norm(X_t[i] - X_star[i])**2 for i in range(n_subsystems))
+def compute_lyapunov_forward(X_t, X_star, weights, max_val = 1e10):
+    return np.clip(sum(weights[i][0] * np.linalg.norm(X_t[i] - X_star[i])**2 for i in range(n_subsystems)) , 0, max_val)
 
 def compute_lyapunov_backward(X_t, X_t_prev, weights, max_val=1e10):
     if X_t_prev is None:
@@ -222,7 +226,7 @@ for t in range(n_iterations):
         weight_functions[i](X_t_next[i] if i!=2 else X_t_wave, X_t[i] if i != 2 else X_t_wave, X_t_prev[2] if i==2 and X_t_prev is not None else 0, weights[i][0], weights[i][1])
         for i in range(n_subsystems)
     ]
-    V_t = compute_lyapunov_forward(X_t_next, X_star, weights)
+    V_t = compute_lyapunov_forward(X_t_next, X_star, weights, max_val=1e10)
     lyapunov_values.append(V_t)
     rho_t = compute_rho(weights)
     rho_values.append(rho_t)
@@ -253,10 +257,11 @@ for t in range(n_iterations):
       reverse_subsystem_dynamics(X_t_reverse[i], R_history[t_reverse-1][i] if i!=2 else R_history[t_reverse-1], float(weights[i][0]), float(weights[i][1]))
       for i in range(n_subsystems)
   ]
-  V_t_reverse = compute_lyapunov_backward(X_t_reverse, X_t_prev_reverse, weights)
+  V_t_reverse = compute_lyapunov_backward(X_t_reverse, X_t_prev_reverse, weights, max_val=max_val)
   lyapunov_reverse_values.append(V_t_reverse)
   if t > 0:
       lyapunov_reverse_differences.append(np.clip(abs(lyapunov_reverse_values[t]-lyapunov_reverse_values[t-1]), -max_val, max_val))
+
   results.append({
         "iteration": t,
         "lyapunov_backward": V_t_reverse,
@@ -265,7 +270,7 @@ for t in range(n_iterations):
     })
   X_t_reverse = X_t_reverse_next
   if t > 10:
-    if V_t_reverse > 0 and np.mean(lyapunov_reverse_differences[-10:]) / lyapunov_reverse_values[t-1] < tolerance:
+    if V_t_reverse > 0 and  np.mean(lyapunov_reverse_differences[-10:]) / lyapunov_reverse_values[t-1] < tolerance:
           print(f"Converged at iteration: {t}")
           break
 
