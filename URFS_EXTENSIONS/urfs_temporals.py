@@ -54,31 +54,32 @@ def weight_evolution_wave(X, R_t, U_prev, W_f, W_b, eta_f=0.001, eta_b=0.001, mi
 
 # --- Core Recursive Feedback and Weight Update ---
 def subsystem_dynamics(X, W_f, W_b, F, B, interaction_effects, scale_factor=1.0, max_val=1e10):
+     W_f = np.clip(W_f, 1e-8, max_val)
+     W_b = np.clip(W_b, 1e-8, max_val)
      F = np.clip(F, -max_val, max_val) # Clip F
      B = np.clip(B, -max_val, max_val) # Clip B
      interaction_effects = np.clip(interaction_effects, -max_val, max_val)
      value = scale_factor * (W_f * F + W_b * B + interaction_effects) / (W_f + W_b + 1e-8)
      return np.clip(value, -max_val, max_val)
 
-def reverse_subsystem_dynamics(R_t, X, W_f, W_b, scale_factor=1.0, epsilon=1e-8):
+def reverse_subsystem_dynamics(R_t, X, W_f, W_b, scale_factor=1.0, epsilon=1e-8, max_val=1e10):
     """Evolve the stabilized result R_t backward in time."""
     W_f = float(W_f)
     W_b = float(W_b)
-
     if isinstance(R_t, np.ndarray) and isinstance(X, np.ndarray):
-        return (W_b * R_t - W_f * X) / (W_b + epsilon)
+        return np.clip( (W_b * R_t - W_f * X) / (W_b + epsilon) , -max_val, max_val)
     elif isinstance(R_t, np.ndarray):
         if isinstance(X, (int, float)):
-            return (W_b * R_t - W_f * X) / (W_b + epsilon)
+            return  np.clip((W_b * R_t - W_f * np.array(X)) / (W_b + epsilon) , -max_val, max_val)
         else: #  X is not an array but a list or something else
-            return (W_b * R_t - W_f * np.array(X, dtype=object)[2] if isinstance(X, list) and len(X) > 2 else W_b * R_t - W_f * np.array(X) ) / (W_b + epsilon)
+            return  np.clip((W_b * R_t - W_f * np.array(X, dtype=object)[2] if isinstance(X, list) and len(X) > 2 else W_b * R_t - W_f * np.array(X) ) / (W_b + epsilon) , -max_val, max_val)
     elif isinstance(X, np.ndarray):
         if isinstance(R_t, (int, float)):
-            return (W_b * np.array(R_t) - W_f * X) / (W_b + epsilon)
+             return np.clip((W_b * np.array(R_t) - W_f * X) / (W_b + epsilon), -max_val, max_val)
         else:
-             return (W_b * np.array(R_t, dtype=object)[2]  if isinstance(R_t, list) and len(R_t)>2 else W_b * np.array(R_t) - W_f * X) / (W_b + epsilon)
+             return np.clip((W_b * np.array(R_t, dtype=object)[2]  if isinstance(R_t, list) and len(R_t)>2 else W_b * np.array(R_t) - W_f * X) / (W_b + epsilon), -max_val, max_val)
     else:
-      return (W_b * R_t - W_f * X) / (W_b + epsilon)
+      return np.clip((W_b * R_t - W_f * X) / (W_b + epsilon), -max_val, max_val)
 # --- Parameters ---
 n_subsystems = 3
 n_iterations = 200
@@ -108,14 +109,15 @@ metrics = {
 lyapunov_values = []
 rho_values = []
 tolerance = 1e-2
+max_val = 1e10
 
 def compute_lyapunov_forward(X_t, X_star, weights):
     return sum(weights[i][0] * np.linalg.norm(X_t[i] - X_star[i])**2 for i in range(n_subsystems))
 
-def compute_lyapunov_backward(X_t, X_t_prev, weights):
+def compute_lyapunov_backward(X_t, X_t_prev, weights, max_val=1e10):
     if X_t_prev is None:
        return 0.0
-    return sum(weights[i][0] * np.linalg.norm(X_t[i] - X_t_prev[i])**2 for i in range(n_subsystems))
+    return sum(weights[i][0] * np.clip(np.linalg.norm(X_t[i] - X_t_prev[i])**2, -max_val, max_val)  for i in range(n_subsystems))
 
 def compute_rho(weights):
   return  [w[1] / (w[0] + w[1] + 1e-8) for w in weights] # add small epsilon
@@ -225,7 +227,7 @@ for t in range(n_iterations):
     })
   X_t_reverse = X_t_reverse_next
   if t > 10:
-    if V_t_reverse > 0 and abs(lyapunov_reverse_values[t]-lyapunov_reverse_values[t-1]) / V_t_reverse < tolerance:
+    if V_t_reverse > 0 and abs(np.clip(lyapunov_reverse_values[t]-lyapunov_reverse_values[t-1], -max_val, max_val) / V_t_reverse, -max_val, max_val)  < tolerance:
           print(f"Converged at iteration: {t}")
           break
 
