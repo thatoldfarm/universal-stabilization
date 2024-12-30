@@ -1,6 +1,8 @@
 # universal-stabilization
 A framework for Recursive Feedback Systems in Bidirectional Math to Achieve Universal Stabilization.
 
+![The balancing equation.](https://github.com/thatoldfarm/universal-stabilization/blob/main/the_balancing_equation.png)
+
 ## Repository Note:
 ```
 - Basic example scripts are in the main branch.
