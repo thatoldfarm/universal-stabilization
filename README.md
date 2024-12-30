@@ -1,6 +1,14 @@
 # universal-stabilization
 A framework for Recursive Feedback Systems in Bidirectional Math to Achieve Universal Stabilization.
 
+## Repository Note:
+```
+- Basic example scripts are in the main branch.
+- Experiemental implementations are in the 'Extensions' folder.
+- Experiemental frameworks are in the 'Frameworks' folder.
+- Documentation is in the 'docs' folder.
+```
+
 Abstract: This paper formalizes the recursive feedback system as a universal equation for achieving stabilization and symmetry across diverse domains. The properties of boundedness, symmetry, and convergence are rigorously analyzed, demonstrating their applicability to fields such as physics, biology, artificial intelligence, economics, and computational systems. By generalizing the system’s dynamics, this work introduces a mathematical foundation for understanding equilibrium in complex systems, with wide-ranging practical applications. The original post about this system can be found on the Hive Blockchain [here.](https://peakd.com/stemsocial/@jacobpeacock/bidirectional-recursive-feedback-systems-a) 
 
 1. Introduction
