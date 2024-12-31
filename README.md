@@ -11,7 +11,7 @@ This project presents a universal equation for stabilization and symmetry, provi
 - Experimental *implementations are in the 'Extensions' folder. *The core equation is implemented in diverse ways.
 - Experimental frameworks are in the 'Frameworks' folder.
 - An inverted pendulum example is in the 'Inverted_Pendulum_Feedback_System' folder.
-- Images of the core equation and an ODE version of it are in the 'Images' folder.
+- An image of the core equation and an ODE version of it are in the 'Images' folder.
 - Documentation is in the 'docs' folder.
 ```
 
