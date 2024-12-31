@@ -28,7 +28,6 @@ Abstract: This paper formalizes the recursive feedback system as a universal equ
 
 2. Universal Equation
 
-~~~
 2.1 General Formulation Let XX and X′X' represent forward and backward inputs, with dynamic weights wfw_f and wbw_b:
 
 ~~~
