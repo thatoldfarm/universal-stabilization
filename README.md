@@ -3,15 +3,16 @@ A framework for Recursive Feedback Systems in Bidirectional Math to Achieve Univ
 
 This project presents a universal equation for stabilization and symmetry, providing a framework for understanding equilibrium in systems as diverse as physics, biology, economics, AI, cryptography and more. By unifying concepts across fields, it lays the groundwork for solving real-world problems in unprecedented ways.
 
-![The balancing equation.](https://github.com/thatoldfarm/universal-stabilization/blob/main/the_balancing_equation.png)
+![The balancing equation.](https://github.com/thatoldfarm/universal-stabilization/blob/main/images/the_balancing_equation.png)
 
 ## Repository Note:
 ```
-- Basic example scripts are in the main branch.
+- Basic example scripts are in the 'Basic_Scripts' folder.
 - Experimental *implementations are in the 'Extensions' folder. *The core equation is implemented in diverse ways.
 - Experimental frameworks are in the 'Frameworks' folder.
-- Documentation is in the 'docs' folder.
 - An inverted pendulum example is in the 'Inverted_Pendulum_Feedback_System' folder.
+- Images of the core equation and an ODE version of it are in the 'Images' folder.
+- Documentation is in the 'docs' folder.
 ```
 
 Abstract: This paper formalizes the recursive feedback system as a universal equation for achieving stabilization and symmetry across diverse domains. The properties of boundedness, symmetry, and convergence are rigorously analyzed, demonstrating their applicability to fields such as physics, biology, artificial intelligence, economics, and computational systems. By generalizing the system’s dynamics, this work introduces a mathematical foundation for understanding equilibrium in complex systems, with wide-ranging practical applications. The original post about this system can be found on the Hive Blockchain [here.](https://peakd.com/stemsocial/@jacobpeacock/bidirectional-recursive-feedback-systems-a) 
