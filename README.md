@@ -8,8 +8,8 @@ This project presents a universal equation for stabilization and symmetry, provi
 ## Repository Note:
 ```
 - Basic example scripts are in the main branch.
-- Experiemental implementations are in the 'Extensions' folder.
-- Experiemental frameworks are in the 'Frameworks' folder.
+- Experimental *implementations are in the 'Extensions' folder. *The application of the core equation is implemented in diverse ways.
+- Experimental frameworks are in the 'Frameworks' folder.
 - Documentation is in the 'docs' folder.
 ```
 
