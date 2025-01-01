@@ -31,12 +31,10 @@ Abstract: This paper formalizes the recursive feedback system as a universal equ
 
 2.1 General Formulation Let XX and X′X' represent forward and backward inputs, with dynamic weights wfw_f and wbw_b:
 
-```
 $$
 Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}}
 $$
 This equation recursively stabilizes input values through bidirectional feedback.
-```
 
 2.2 Dynamic Weight Evolution Weights evolve based on recursive feedback:
 
