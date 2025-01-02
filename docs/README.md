@@ -1,6 +1,20 @@
 # universal-stabilization
 A framework for Recursive Feedback Systems in Bidirectional Math to Achieve Universal Stabilization.
 
+This project presents a universal equation for stabilization and symmetry, providing a framework for understanding equilibrium in systems as diverse as physics, biology, economics, AI, cryptography and more. By unifying concepts across fields, it lays the groundwork for solving real-world problems in unprecedented ways.
+
+![The balancing equation.](https://github.com/thatoldfarm/universal-stabilization/blob/main/images/the_balancing_equation.png)
+
+## Repository Note:
+```
+- Basic example scripts are in the 'Basic_Scripts' folder.
+- Experimental *implementations are in the 'Extensions' folder. *The core equation is implemented in diverse ways.
+- Experimental frameworks are in the 'Frameworks' folder.
+- An inverted pendulum example is in the 'Inverted_Pendulum_Feedback_System' folder.
+- An image of the core equation and an ODE version of it are in the 'Images' folder.
+- Documentation is in the 'docs' folder.
+```
+
 Abstract: This paper formalizes the recursive feedback system as a universal equation for achieving stabilization and symmetry across diverse domains. The properties of boundedness, symmetry, and convergence are rigorously analyzed, demonstrating their applicability to fields such as physics, biology, artificial intelligence, economics, and computational systems. By generalizing the system’s dynamics, this work introduces a mathematical foundation for understanding equilibrium in complex systems, with wide-ranging practical applications. The original post about this system can be found on the Hive Blockchain [here.](https://peakd.com/stemsocial/@jacobpeacock/bidirectional-recursive-feedback-systems-a) 
 
 1. Introduction
@@ -8,110 +22,143 @@ Abstract: This paper formalizes the recursive feedback system as a universal equ
 1.1 Motivation Stabilization and symmetry are universal features of natural and artificial systems, from physical laws to neural networks. This paper explores the recursive feedback system as a mathematical tool for modeling equilibrium, presenting it as a generalizable equation with universal applicability.
 
 1.2 Objectives
+
     • Define the recursive feedback system as a universal equation. 
     • Prove boundedness and convergence properties across multiple domains. 
     • Explore potential applications and implications for equilibrium modeling. 
+    
 
 2. Universal Equation
 
-~~~
+
 2.1 General Formulation Let XX and X′X' represent forward and backward inputs, with dynamic weights wfw_f and wbw_b:
 
-~~~
-Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}} 
+$$R_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}}$$
+
 This equation recursively stabilizes input values through bidirectional feedback.
-~~~
+
 
 2.2 Dynamic Weight Evolution Weights evolve based on recursive feedback:
 
-~~~
-wf,t+1=f({Rt(i)}),wb,t+1=g({Rt(i)})w_{f,t+1} = f(\{R_t(i)\}), \quad w_{b,t+1} = g(\{R_t(i)\}) 
+$$wf,t+1=f({Rt(i)}),wb,t+1=g({Rt(i)})w_{f,t+1} = f(\{R_t(i)\}), \quad w_{b,t+1} = g(\{R_t(i)\})$$
+
 Where ff and gg are domain-specific functions, such as mean or variance.
-~~~
+
 
 3. Boundedness
+   
 
-~~~
 3.1 Property Definition The recursive feedback system is bounded, meaning outputs remain within the range of inputs:
 
-~~~
-Rt(i)∈[min⁡(X(i),X′(i)),max⁡(X(i),X′(i))]R_t(i) \in \left[\min(X(i), X'(i)), \max(X(i), X'(i))\right] 
-~~~
+
+$$Rt(i)∈[min⁡(X(i),X′(i)),max⁡(X(i),X′(i))]R_t(i) \in \left[\min(X(i), X'(i)), \max(X(i), X'(i))\right]$$
+
 
 3.2 Proof of Boundedness From the recursive transformation:
 
-~~~
-Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}} 
-Since weights wf,t,wb,t>0w_{f,t}, w_{b,t} > 0, and X(i),X′(i)X(i), X'(i) are bounded, the weighted average cannot exceed the range defined by min⁡(X(i),X′(i))\min(X(i), X'(i)) and max⁡(X(i),X′(i))\max(X(i), X'(i)).
-~~~
+
+$$Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}}$$ 
+
+
+Since weights $$wf,t,wb,t>0w_{f,t}, w_{b,t} > 0,$$ and $$X(i),X′(i)X(i), X'(i)$$ are bounded, the weighted average cannot exceed the range defined by $$min⁡(X(i),X′(i))\min(X(i), X'(i)) and max⁡(X(i),X′(i))\max(X(i), X'(i)).$$
+
 
 4. Convergence
 
+
 4.1 Property Definition Convergence ensures that the recursive system stabilizes over iterations:
-~~~
-lim⁡t→∞Rt(i)=R∗(i)\lim_{t \to \infty} R_t(i) = R^*(i) 
+
+
+$$lim⁡t→∞Rt(i)=R∗(i)\lim_{t \to \infty} R_t(i) = R^*(i)$$ 
+
+
 Where R∗(i)R^*(i) represents the stabilized output.
-~~~
+
 
 4.2 Geometric Decay Define Δt(i)\Delta_t(i) as the difference between consecutive steps:
-~~~
-Δt(i)=∣Rt+1(i)−Rt(i)∣\Delta_t(i) = |R_{t+1}(i) - R_t(i)| 
+
+
+$$Δt(i)=∣Rt+1(i)−Rt(i)∣\Delta_t(i) = |R_{t+1}(i) - R_t(i)|$$ 
+
+
 The system exhibits geometric decay:
-Δt(i)≤k⋅Δt−1(i),0<k<1\Delta_t(i) \leq k \cdot \Delta_{t-1}(i), \quad 0 < k < 1 
+
+
+$$Δt(i)≤k⋅Δt−1(i),0<k<1\Delta_t(i) \leq k \cdot \Delta_{t-1}(i), \quad 0 < k < 1$$ 
+
+
 Where kk depends on the dynamic weights and input properties.
-~~~
+
 
 4.3 Proof of Convergence From the recursive transformation:
-~~~
-Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}} 
+
+
+$$Rt(i)=wf,t⋅X(i)+wb,t⋅X′(i)wf,t+wb,tR_t(i) = \frac{w_{f,t} \cdot X(i) + w_{b,t} \cdot X'(i)}{w_{f,t} + w_{b,t}}$$ 
+
+
 As weights evolve recursively, the difference Δt(i)\Delta_t(i) decreases geometrically:
-Δt(i)=∣At+1Bt+1−AtBt∣≤Δw⋅Δx(wf,t+wb,t)2\Delta_t(i) = \left| \frac{A_{t+1}}{B_{t+1}} - \frac{A_t}{B_t} \right| \leq \frac{\Delta_w \cdot \Delta_x}{(w_{f,t} + w_{b,t})^2} 
-Where Δw\Delta_w and Δx\Delta_x are bounded changes in weights and inputs, respectively. As t→∞t \to \infty, Δt(i)→0\Delta_t(i) \to 0, ensuring convergence.
-~~~
+
+
+$$Δt(i)=∣At+1Bt+1−AtBt∣≤Δw⋅Δx(wf,t+wb,t)2\Delta_t(i) = \left| \frac{A_{t+1}}{B_{t+1}} - \frac{A_t}{B_t} \right| \leq \frac{\Delta_w \cdot \Delta_x}{(w_{f,t} + w_{b,t})^2}$$ 
+
+
+Where $$Δw\Delta_w and Δx\Delta_x$$ are bounded changes in weights and inputs, respectively. $$As t→∞t \to \infty, Δt(i)→0\Delta_t(i) \to 0$$, ensuring convergence.
+
 
 5. Applications Across Domains
+   
 
 5.1 Physics (Time Symmetry)
+
     • Inputs: Time-evolving variables (e.g., position, momentum). 
     • Stabilization: Models equilibrium in time-reversible systems.
     
 5.2 Biology (Population Dynamics)
+
     • Inputs: Population levels or resource availability. 
     • Stabilization: Predicts steady states in ecosystems. 
     
 5.3 Artificial Intelligence (Neural Networks)
+
     • Inputs: Neural activations or error gradients. 
     • Stabilization: Enhances convergence and balance in training. 
     
 5.4 Economics (Market Equilibrium)
+
     • Inputs: Supply (forward) and demand (backward). 
     • Stabilization: Models market equilibrium dynamics. 
     
 5.5 Signal Processing
+
     • Inputs: Audio or image data with noise. 
     • Stabilization: Reduces noise and enhances signal clarity without distorting the original data. 
     
 5.6 Graphics and Image Rendering
+
     • Inputs: Pixel intensities or vector data. 
     • Stabilization: Balances sharpness and smoothness in image reconstruction. 
     
 5.7 Data Compression and Storage Optimization
+
     • Inputs: Binary sequences or high-dimensional data. 
     • Stabilization: Identifies repetitive patterns for efficient compression while maintaining fidelity. 
     
 5.8 Computational Resource Management
+
     • Inputs: Memory access patterns, CPU cycles, threading. 
     • Stabilization: Optimizes read/write operations, defragmentation, and parallel processing. 
     
 5.9 Cryptography and Secure Communication
+
     • Inputs: Key sequences or encoded messages. 
     • Stabilization: Ensures balanced distribution of cryptographic elements to resist attacks. 
     
 5.10 Multi-Agent Systems
+
     • Inputs: Agent interactions and decisions. 
     • Stabilization: Harmonizes competing objectives to achieve collective equilibrium. 
 
-9. Conclusion The recursive feedback system represents a universal equation for achieving stabilization across domains. Its properties of boundedness and convergence provide a mathematical foundation for modeling equilibrium in complex systems. By demonstrating its utility across fields such as physics, biology, AI, and computational resource management, this system opens pathways to innovative solutions in both theory and application. Future work will explore its integration into real-world systems, multi-dimensional data, and ethical frameworks for responsible use.
+6. Conclusion The recursive feedback system represents a universal equation for achieving stabilization across domains. Its properties of boundedness and convergence provide a mathematical foundation for modeling equilibrium in complex systems. By demonstrating its utility across fields such as physics, biology, AI, and computational resource management, this system opens pathways to innovative solutions in both theory and application. Future work will explore its integration into real-world systems, multi-dimensional data, and ethical frameworks for responsible use.
 
 ### Recursive Feedback System Scripts:
 
@@ -223,6 +270,28 @@ This suite of Python scripts demonstrates the implementation of Recursive Feedba
 
 **With curiosity and dedication, this suite brings the recursive feedback system to life across scalar, vector, and modular implementations. Happy exploring! 🚀**
 
+## License
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
+MIT License
 
+Copyright (c) [2024] [Jacob Peacock]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
